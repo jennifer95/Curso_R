@@ -1,6 +1,0 @@
-"0","#| label: particion"
-"0","#| echo: true"
-"0","set.seed(500)"
-"0","conf_particionam <- initial_split(Notas, prop = 0.75)"
-"0","Notas_training <- training(conf_particionam)"
-"0","Notas_testing <- testing(conf_particionam)"

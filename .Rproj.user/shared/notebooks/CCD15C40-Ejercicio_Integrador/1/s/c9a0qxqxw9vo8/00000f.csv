@@ -1,0 +1,8 @@
+"0","#| echo: true"
+"0",""
+"0","import matplotlib.pyplot as plt"
+"0","plt.plot([1,2,3,4])"
+"1","[<matplotlib.lines.Line2D object at 0x7ffb5feb2b00>]
+"
+"0","plt.show()"
+"0",""

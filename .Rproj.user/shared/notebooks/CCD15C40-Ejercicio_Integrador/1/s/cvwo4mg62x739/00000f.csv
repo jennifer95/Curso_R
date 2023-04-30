@@ -1,0 +1,6 @@
+"0","library(tidyverse)"
+"0","library(tidymodels)"
+"0","library(reticulate)"
+"0","library(GGally)"
+"0","theme_set(theme_minimal()) # Para hacer más estético"
+"0","# tidymodels_prefer()"

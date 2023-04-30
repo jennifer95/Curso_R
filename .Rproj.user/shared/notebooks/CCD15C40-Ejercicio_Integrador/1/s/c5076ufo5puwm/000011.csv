@@ -1,0 +1,2 @@
+"0","#| label: Gráfica Histograma"
+"0","ggplot(data = iris, aes(x=Sepal.Length)) +   geom_histogram()"

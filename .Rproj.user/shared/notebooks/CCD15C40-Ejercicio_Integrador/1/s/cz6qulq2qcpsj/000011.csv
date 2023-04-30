@@ -1,0 +1,5 @@
+"0","#| label: Gráfica Areas"
+"0","ggplot(data = iris, aes(x=Sepal.Length)) +  geom_area(stat = ""bin"")"
+"2","Error in ggplot(data = iris, aes(x = Sepal.Length)) : 
+  no se pudo encontrar la función ""ggplot""
+"

@@ -1,6 +1,0 @@
-"0","#| label: datos_impago"
-"0","data(""Default"")"
-"2","Warning: data set ‘Default’ not found"
-"0","datos_impago <- Default"
-"2","Error: objeto 'Default' no encontrado
-"

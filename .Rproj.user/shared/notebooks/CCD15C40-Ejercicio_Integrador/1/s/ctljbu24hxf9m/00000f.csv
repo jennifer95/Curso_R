@@ -1,0 +1,2 @@
+"0","#| label: Gráfica Bigotes"
+"0","ggplot(data = iris, aes(x=Species ,y=Sepal.Length)) +   geom_boxplot()"

@@ -1,0 +1,10 @@
+"0","#| echo: true"
+"0","import matplotlib.pyplot as plt"
+"2","ModuleNotFoundError: No module named 'matplotlib'
+"
+"0","plt.plot([1,2,3,4])"
+"2","NameError: name 'plt' is not defined
+"
+"0","plt.show()"
+"2","NameError: name 'plt' is not defined
+"

@@ -1,3 +1,0 @@
-"0","#| label: Carga de Datos"
-"0","Notas <- read.csv(""Notas_Examenes.csv"")"
-"0","n_filas <- nrow(Notas)"
