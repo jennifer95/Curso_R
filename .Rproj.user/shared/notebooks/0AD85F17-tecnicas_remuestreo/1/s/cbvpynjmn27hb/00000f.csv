@@ -1,0 +1,5 @@
+"0","theme_set(theme_test())
+"
+"2","Error in theme_set(theme_test()) : 
+  no se pudo encontrar la función ""theme_set""
+"

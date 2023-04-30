@@ -1,0 +1,20 @@
+---
+title: "Regresión Logística"
+author: "Xavier Buenaño"
+format: 
+  pdf:
+    toc: true
+    toc-title: "Tabla de Contenidos"
+    execute:
+      echo: false
+      warning: false
+    bibliography: referencias_regresion_R.bib
+    csl: apa.csl
+    nocite: |
+      @*
+knitr: 
+  opts_chunk: 
+    fig.path: "figuras/"
+---
+
+

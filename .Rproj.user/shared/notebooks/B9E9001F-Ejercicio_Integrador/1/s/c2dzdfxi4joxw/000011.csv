@@ -1,0 +1,5 @@
+"0","#| label: eval_modelo"
+"0","ml_predicc_metricas <- ml_predicc %>% "
+"0","  metrics(truth = Examen_Final, estimate = .pred)"
+"0",""
+"0","ml_predicc_metricas"

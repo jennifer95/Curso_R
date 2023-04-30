@@ -1,0 +1,179 @@
+---
+title: "Tidymodels"
+author: "Xavier Buenaño"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-title: "Tabla de Contenidos"
+    execute:
+      echo: false
+      warning: false
+    bibliography: referencias_regresion_R.bib
+---
+
+```{r}
+#| label: librerias
+library(tidyverse)
+library(tidymodels)
+```
+
+## Datos
+
+```{r}
+#| label: iris
+data(iris)
+summary(iris)
+```
+
+### Particionamiento
+
+```{r}
+#| label: particion
+set.seed(345)
+conf_particionam <- initial_split(iris, prop = 0.75, strata = Species)
+iris_training <- training(conf_particionam)
+iris_testing <- testing(conf_particionam)
+```
+
+### Creación de receta (Incluir Feature Engineering)
+
+```{r}
+#| label: receta
+iris_train_sel <- iris_training %>% 
+   select(1:4)
+iris_test_sel <- iris_testing %>% 
+  select(1:4)
+
+receta <- recipe(Petal.Length ~ ., data = iris_train_sel) %>% 
+  step_normalize(all_predictors()) %>% 
+  prep()
+
+receta
+```
+
+### Aplicación de receta
+
+```{r}
+#| label: aplic_receta
+iris_train_sel_juice <- receta %>% 
+  juice()
+
+glimpse(iris_train_sel_juice)
+
+iris_test_sel_bake <- receta %>% 
+  bake(iris_test_sel)
+
+glimpse(iris_test_sel_bake)
+```
+
+### Especificación del modelo
+
+Usaremos regresión lineal (@fox2018r).
+
+```{r}
+#| label: esp_gen_modelo
+modelo_lineal <- linear_reg() %>% 
+  set_engine("lm") %>% 
+  set_mode("regression")
+
+translate(modelo_lineal)
+```
+
+### Entrenamiento del modelo
+
+```{r}
+#| label: entren_model
+ml_ajuste <- modelo_lineal %>% fit(Petal.Length ~ ., data = iris_train_sel_juice)
+
+ml_ajuste %>% 
+  pluck("fit") %>% 
+  summary()
+
+```
+
+### Aplicación del modelo a datos de testeo
+
+```{r}
+#|label: model_test
+ml_predicc <- ml_ajuste %>% 
+  predict(iris_test_sel_bake) %>% 
+  bind_cols(iris_test_sel_bake)
+
+ml_predicc_augment <- augment(ml_ajuste, iris_test_sel_bake)
+```
+
+### Evaluación del modelo
+
+```{r}
+#| label: eval_modelo
+ml_predicc_metricas <- ml_predicc %>% 
+  metrics(truth = Petal.Length, estimate = .pred)
+
+ml_predicc_metricas
+```
+
+### Verificación de supuestos
+
+#### Normalidad
+
+```{r}
+#| label: normalidad
+library(nortest)
+lillie.test(ml_predicc_augment$.resid)
+```
+
+Los residuales son normales
+
+#### Homocedasticidad
+
+Vamos a usar el Test de Puntajes de Breusch-Pagan
+
+```{r}
+#| label: homocedasticidad
+library(car)
+ncvTest(ml_ajuste$fit)
+```
+
+Considerando un nivel de significación del 5%, no existe homocedasticidad. El p-valor es menor al 5%.
+
+#### Independencia 
+
+```{r}
+#| label: independenci
+DW <- durbinWatsonTest(ml_predicc_augment$.resid) 
+```
+
+Asumimos independencia, dado que D es `r round(DW, 1)`.
+
+#### Multicolinealidad
+
+```{r}
+#| label: multicolinealidad
+car::vif(ml_ajuste$fit)
+```
+
+No existen vifs mayores o iguales a 5, por tanto asumo ausencia de multicolinealidad.
+
+#### Identificación de outliers
+
+Usaremos el test de Bonferroni
+
+```{r}
+#| label: ident_outliers
+outlierTest(ml_ajuste$fit)
+```
+
+Asumo que no tengo outliers aplicando el referido test.
+
+#### Análisis Gráfico
+
+```{r}
+#| label: analisis_grafico_sup
+plot(ml_ajuste$fit)
+```
+
+## Referencias Bibliográficas
+
+
+

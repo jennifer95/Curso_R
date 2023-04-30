@@ -1,0 +1,221 @@
+---
+title: "Ejercicio Integrador Final"
+author: "Jennifer Ortega"
+format: 
+  pdf:
+    toc: true
+    toc-title: "Tabla de Contenidos"
+    execute:
+      echo: false
+      warning: false
+    bibliography: referencias_regresion_R.bib
+    csl: apa.csl
+    nocite: |
+      @*
+knitr: 
+  opts_chunk: 
+    fig.path: "figuras/"
+---
+# Descripción del Problema
+
+Se intentará predecir si un estudiante logrará aprobar el  \textbf{Examen Final} de la materia de Mecánica Newtonia, de acuerdo a las notas que obtuvo a lo largo de todo el semestre en los diferentes exámenes.
+
+El conjunto de datos pertenece al curso de Mecánica Newtoniana de primer semestre de la Escuela Politécnica Nacional en el ciclo 2022B.
+
+```{r}
+#| label: librerias
+library(tidyverse)
+library(tidymodels)
+library(rsample)
+```
+## Datos
+
+```{r}
+#| label: Carga_datos
+Notas <- read.csv("Notas_Examenes.csv")
+n_filas <- nrow(Notas)
+```
+
+Los datos pertenecen a **`r n_filas`** Estudiantes de primer semestre de la Escuela Politécnica Nacional. Las calificaciones coresponden al primer examen, al segundo examen y al examen final, \textbf{en el presente proyecto se intentará predecir cual será la calificación que obtendra el estudiante en el examen final}. 
+
+```{r}
+summary(Notas)
+```
+
+
+## Preprocesamiento de los Datos
+
+### Particionamiento
+Primero realizaremos el Particionamiento de los datos, para lo cual dividiremos a los datos en una proporción de 75\% y 25\% para los datos de entrenamiento y prueba, respectivamente.
+
+```{r}
+#| label: particion
+#| echo: true
+set.seed(500)
+conf_particionam <- initial_split(Notas, prop = 0.75)
+Notas_training <- training(conf_particionam)
+Notas_testing <- testing(conf_particionam)
+```
+## Regresión Lineal con 2 Variables Explicativas
+
+### Creación de receta (Incluir Feature Engineering)
+Seleccionamos las variables que nos serviran para crear el modelo, por lo que para el análisis el valor que no aporta ninguna información relevante es el nombre del estudiantes, por lo que esta variable será descartada de nuestro conjunto de datos a analizar. Además, se seleccionará la variable que va a ser explicada con el modelo que en este caso son las calificaciones del \textbf{Examen Final}, de acuerdo a las calificaciones obtenidas en el primer y segundo examen.
+
+```{r}
+#| label: receta
+Notas_train_sel <- Notas_training %>% 
+   select(2:4)
+Notas_test_sel <- Notas_testing %>% 
+  select(2:4)
+
+# Examen_Final= Variable que va a ser explicada.
+receta <- recipe(Examen_Final ~ ., data = Notas_train_sel) %>% 
+  step_normalize(all_predictors()) %>% 
+  prep()
+receta
+```
+
+### Aplicación de receta
+
+```{r}
+#| label: aplicacion_receta
+Notas_train_sel_juice <- receta %>% 
+  juice()
+
+glimpse(Notas_train_sel_juice)
+
+Notas_test_sel_bake <- receta %>% 
+  bake(Notas_test_sel)
+
+glimpse(Notas_test_sel_bake)
+```
+
+### Especificación del modelo
+
+Usaremos regresión lineal (@fox2018r).
+
+```{r}
+#| label: esp_gen_modelo
+modelo_lineal <- linear_reg() %>% 
+  set_engine("lm") %>% 
+  set_mode("regression")
+
+translate(modelo_lineal)
+```
+### Entrenamiento del modelo
+
+```{r}
+#| label: entren_model
+ml_ajuste <- modelo_lineal %>% fit(Examen_Final ~ ., data = Notas_train_sel_juice)
+
+ml_ajuste %>% 
+  pluck("fit") %>% 
+  summary()
+
+```
+### Aplicación del modelo a datos de testeo
+Vamos a ver la predicción según el modelo.
+
+```{r}
+#| label: model_test
+ml_predicc <- ml_ajuste %>% 
+  predict(Notas_test_sel_bake) %>% 
+  bind_cols(Notas_test_sel_bake)
+
+ml_predicc_augment <- augment(ml_ajuste, Notas_test_sel_bake)
+augment(ml_ajuste, Notas_test_sel_bake)
+```
+
+### Evaluación del modelo
+
+```{r}
+#| label: eval_modelo
+ml_predicc_metricas <- ml_predicc %>% 
+  metrics(truth = Examen_Final, estimate = .pred)
+
+ml_predicc_metricas
+```
+Sengún los resultados encontrados, podemos observar que las variables no son explicativas.
+
+## Regresión Lineal con 1 Variables Explicativas
+### Creación de receta (Incluir Feature Engineering)
+
+```{r}
+#| label: receta1
+Notas_train_sel_1 <- Notas_training %>% 
+   select(3:4)
+Notas_test_sel_1 <- Notas_testing %>% 
+  select(3:4)
+
+# Examen_Final= Variable que va a ser explicada.
+receta_1 <- recipe(Examen_Final ~ ., data = Notas_train_sel_1) %>% 
+  step_normalize(all_predictors()) %>% 
+  prep()
+receta_1
+```
+### Aplicación de receta
+
+```{r}
+#| label: aplicacion_receta1
+Notas_train_sel_juice_1 <- receta_1 %>% 
+  juice()
+
+glimpse(Notas_train_sel_juice_1)
+
+Notas_test_sel_bake_1 <- receta_1 %>% 
+  bake(Notas_test_sel_1)
+
+glimpse(Notas_test_sel_bake_1)
+```
+
+### Especificación del modelo
+
+Usaremos regresión lineal (@fox2018r).
+
+```{r}
+#| label: esp_gen_modelo1
+modelo_lineal <- linear_reg() %>% 
+  set_engine("lm") %>% 
+  set_mode("regression")
+
+translate(modelo_lineal)
+```
+### Entrenamiento del modelo
+
+```{r}
+#| label: entren_model1
+ml_ajuste <- modelo_lineal %>% fit(Examen_Final ~ ., data = Notas_train_sel_juice_1)
+
+ml_ajuste %>% 
+  pluck("fit") %>% 
+  summary()
+
+```
+### Aplicación del modelo a datos de testeo
+Vamos a ver la predicción según el modelo.
+
+```{r}
+#|label: model_test1
+ml_predicc <- ml_ajuste %>% 
+  predict(Notas_test_sel_bake_1) %>% 
+  bind_cols(Notas_test_sel_bake_1)
+
+ml_predicc_augment <- augment(ml_ajuste, Notas_test_sel_bake_1)
+augment(ml_ajuste, Notas_test_sel_bake_1)
+```
+
+### Evaluación del modelo
+
+```{r}
+#| label: eval_modelo1
+ml_predicc_metricas <- ml_predicc %>% 
+  metrics(truth = Examen_Final, estimate = .pred)
+
+ml_predicc_metricas
+```
+Sengún los resultados encontrados, podemos observar que las variables no son explicativas.
+
+
+
+
+# Referencias Bibliográficas

@@ -1,0 +1,36 @@
+"0","#| label: receta"
+"0","Notas_train_sel <- Notas_training %>% "
+"0","   select(2:4)"
+"0","Notas_test_sel <- Notas_testing %>% "
+"0","  select(2:4)"
+"0",""
+"0","# Examen_Final= Variable que va a ser explicada."
+"0","receta <- recipe(Examen_Final ~ ., data = Notas_train_sel) %>% "
+"0","  step_normalize(all_predictors()) %>% "
+"0","  prep()"
+"0","receta"
+"2","
+"
+"2","[36m──[39m [1mRecipe[22m [36m──────────────────────────────────────────────────────────────────────────────────────────[39m
+"
+"2","
+"
+"2","── Inputs 
+"
+"2","Number of variables by role
+"
+"2","outcome:   1
+predictor: 2
+"
+"2","
+"
+"2","── Training information 
+"
+"2","Training data contained 178 data points and no incomplete rows.
+"
+"2","
+"
+"2","── Operations 
+"
+"2","[36m•[39m Centering and scaling for: [34mPrimer_Examen[39m, [34mSegundo_Examen[39m | [3mTrained[23m
+"

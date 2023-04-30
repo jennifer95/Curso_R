@@ -1,0 +1,7 @@
+"0","#|label: model_test"
+"0","ml_predicc <- ml_ajuste %>% "
+"0","  predict(Notas_test_sel_bake) %>% "
+"0","  bind_cols(Notas_test_sel_bake)"
+"0",""
+"0","ml_predicc_augment <- augment(ml_ajuste, Notas_test_sel_bake)"
+"0","augment(ml_ajuste, Notas_test_sel_bake)"
